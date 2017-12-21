@@ -1,0 +1,3 @@
+include HISTORY.rst
+include README.rst
+recursive-include quade *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
