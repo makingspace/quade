@@ -1,0 +1,5 @@
+# Quade's requirements.
+-r ../requirements.txt
+
+# Quade in editable mode.
+-e ../
