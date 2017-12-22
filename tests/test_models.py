@@ -8,9 +8,34 @@ from django_fsm.db.fields import TransitionNotAllowed
 from mock import mock
 
 from quade import managers
-from quade.models import QAObject, QATestRecord
+from quade.models import QAObject, QATestRecord, QATestScenario
 from .mock import QaMock
 from . import factories
+
+
+class TestQAScenario(TestCase):
+
+    def test_activate(self):
+        scenario = factories.QATestScenario(config='')
+        scenario.activate()
+        self.assertEqual(scenario.status, QATestScenario.Status.ACTIVE)
+
+    def test_deactivate(self):
+        scenario = factories.QATestScenario(config='', status=QATestScenario.Status.INACTIVE)
+        scenario.deactivate()
+        self.assertEqual(scenario.status, QATestScenario.Status.INACTIVE)
+
+    def test_delete(self):
+        """Deleting a QATestScenario simply makes it inactive."""
+        scenario = factories.QATestScenario(config='', status=QATestScenario.Status.INACTIVE)
+        scenario.delete()
+        self.assertEqual(scenario.status, QATestScenario.Status.INACTIVE)
+
+    def test_hard_delete(self):
+        scenario = factories.QATestScenario(config='')
+        scenario.hard_delete()
+        with self.assertRaises(QATestScenario.DoesNotExist):
+            scenario.refresh_from_db()
 
 
 class TestQaModels(TransactionTestCase):

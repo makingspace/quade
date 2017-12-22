@@ -48,6 +48,20 @@ class QATestScenario(m.Model):
     def __str__(self):
         return '#{}: {}'.format(self.id, self.description)
 
+    def activate(self):
+        self.status = self.Status.ACTIVE
+        self.save()
+
+    def deactivate(self):
+        self.status = self.Status.INACTIVE
+        self.save()
+
+    def delete(self):
+        self.deactivate()
+
+    def hard_delete(self, *args, **kwargs):
+        super(QATestScenario, self).delete(*args, **kwargs)
+
     def save(self, *args, **kwargs):
         try:
             manager.validate(self.config)
