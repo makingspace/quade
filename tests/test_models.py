@@ -105,4 +105,4 @@ class TestQaModels(TransactionTestCase):
                 record.execute_test()
         record.refresh_from_db()
         self.assertEqual(record.status, QATestRecord.Status.FAILED)
-        self.assertEqual(record.instructions, "ValueError(u'Some error',)")
+        self.assertRegexpMatches(record.instructions, r"^ValueError\((u)?'Some error',\)$")
