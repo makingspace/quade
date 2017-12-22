@@ -28,3 +28,10 @@ MANIFEST
 
 # Example app
 example/db.sqlite3
+
+# Other artifacts
+.coverage*
+.tox
+
+# PyCharm
+.idea/
