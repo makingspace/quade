@@ -73,7 +73,7 @@ class QATestRecord(m.Model):
         IN_PROGRESS = 10
         DONE = 20
 
-    scenario = m.ForeignKey(QATestScenario)
+    scenario = m.ForeignKey(QATestScenario, on_delete=m.PROTECT)
     instructions = m.TextField(
         blank=True,
         null=True,
@@ -81,7 +81,7 @@ class QATestRecord(m.Model):
         " information."
     )
     status = FSMIntegerField(choices=Status.choices, default=Status.NOT_READY)
-    created_by = m.ForeignKey(settings.AUTH_USER_MODEL, related_name='+')
+    created_by = m.ForeignKey(settings.AUTH_USER_MODEL, related_name='+', on_delete=m.PROTECT)
     created_on = m.DateTimeField(auto_now_add=True)
     updated_on = m.DateTimeField(auto_now=True)
 
@@ -117,10 +117,10 @@ class QAObject(m.Model):
     class Meta:
         app_label = 'quade'
 
-    content_type = m.ForeignKey(ContentType)
+    content_type = m.ForeignKey(ContentType, on_delete=m.CASCADE)
     object_id = m.PositiveIntegerField()
     object = GenericForeignKey('content_type', 'object_id')
-    record = m.ForeignKey(QATestRecord, related_name='qa_objects')
+    record = m.ForeignKey(QATestRecord, related_name='qa_objects', on_delete=m.CASCADE)
 
     def __str__(self):
         return "QAObject #{}: {}".format(self.pk, self.object)

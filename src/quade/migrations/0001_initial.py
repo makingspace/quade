@@ -15,8 +15,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('contenttypes', '0002_remove_content_type_name'),
     ]
 
     operations = [
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('status', django_fsm.db.fields.fsmfield.FSMIntegerField(choices=[(1, b'READY'), (10, b'IN_PROGRESS'), (20, b'DONE'), (-1, b'NOT_READY'), (-10, b'FAILED')], db_index=True, default=-1)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
                 ('updated_on', models.DateTimeField(auto_now=True)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='qatestrecord',
             name='scenario',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='quade.QATestScenario'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='quade.QATestScenario'),
         ),
         migrations.AddField(
             model_name='qaobject',
