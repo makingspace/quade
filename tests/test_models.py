@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.core.exceptions import ValidationError
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django_fsm.db.fields import TransitionNotAllowed
 from mock import mock
 
@@ -38,7 +38,7 @@ class TestQAScenario(TestCase):
             scenario.refresh_from_db()
 
 
-class TestQaModels(TransactionTestCase):
+class TestQaModels(TestCase):
 
     @mock.patch('quade.models.manager')
     @QaMock(managers)
