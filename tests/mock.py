@@ -26,12 +26,15 @@ class QaMock:
             # Monkey patch the registry.
             self.module.manager._registry = {func.__name__: func for func in self.funcs}
 
-            # Run the wrapped function (e.g. a test).
-            wrapped_fn_return_value = fn(*args, **kwargs)
-
-            # Restore the original registry.
-            self.module.manager._registry = original_registry
-
-            return wrapped_fn_return_value
+            try:
+                # Run the wrapped function (e.g. a test).
+                wrapped_fn_return_value = fn(*args, **kwargs)
+            except:
+                raise
+            else:
+                return wrapped_fn_return_value
+            finally:
+                # Restore the original registry.
+                self.module.manager._registry = original_registry
 
         return wrapper
