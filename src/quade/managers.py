@@ -18,6 +18,10 @@ class FixtureManager:
     def register(self, func):
         self._registry[func.__name__] = func
 
+    @property
+    def registry(self):
+        return self._registry
+
     def setup(self):
         from . import fixtures  # isort:skip
         # TODO: Allow customization
