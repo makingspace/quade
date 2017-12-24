@@ -50,3 +50,12 @@ class QATestRecord(DjangoModelFactory):
 
     scenario = SubFactory(QATestScenario)
     created_by = SubFactory(UserAdmin)
+
+
+class QAObject(DjangoModelFactory):
+
+    class Meta:
+        model = quade_models.QAObject
+
+    object = SubFactory(User)
+    record = SubFactory(QATestRecord)

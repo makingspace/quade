@@ -145,3 +145,10 @@ class TestQaModels(TestCase):
         record.refresh_from_db()
         self.assertEqual(record.status, QATestRecord.Status.FAILED)
         self.assertRegexpMatches(record.instructions, r"^ValueError\((u)?'Some error',\)$")
+
+
+class TestQAObject(TestCase):
+
+    def test_str(self):
+        qa_object = factories.QAObject()
+        self.assertEqual(str(qa_object), "QAObject #1: {}".format(qa_object.object))
