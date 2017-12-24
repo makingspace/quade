@@ -37,6 +37,20 @@ class TestQAScenario(TestCase):
         with self.assertRaises(QATestScenario.DoesNotExist):
             scenario.refresh_from_db()
 
+    def test_active_queryset(self):
+        active_scenarios = factories.QATestScenario.create_batch(3, config='')
+        factories.QATestScenario(config='', status=QATestScenario.Status.INACTIVE)  # Noise
+        self.assertQuerysetEqual(
+            QATestScenario.objects.active(),
+            [s.pk for s in active_scenarios],
+            transform=lambda obj: obj.pk,
+            ordered=False
+        )
+
+    def test_str(self):
+        scenario = factories.QATestScenario(config='', description='A Nice Test')
+        self.assertEqual(str(scenario), '#1: A Nice Test')
+
 
 class TestQaModels(TestCase):
 
