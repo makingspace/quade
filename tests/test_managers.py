@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.test import TestCase
-from django.utils import timezone
 
 from quade import managers
 from tests.mock import QaMock
