@@ -30,7 +30,7 @@ MANIFEST
 example/db.sqlite3
 
 # Other artifacts
-.coverage*
+.coverage
 .tox
 
 # PyCharm

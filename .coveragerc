@@ -1,0 +1,18 @@
+[run]
+branch = true
+source = quade
+
+[report]
+omit =
+    *site-packages*
+    *tests*
+    *.tox*
+show_missing = True
+exclude_lines =
+    raise NotImplementedError
+
+[paths]
+source =
+   src/quade
+   .tox/*/lib/python*/site-packages/quade
+   .tox/pypy*/site-packages/quade
