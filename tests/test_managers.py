@@ -5,8 +5,9 @@ User = get_user_model()
 from django.test import TestCase
 
 from quade import managers
-from tests.mock import QaMock
-from tests import factories
+from .mock import QaMock
+from . import factories
+from .fixtures import customer
 
 
 class TestFixtureManager(TestCase):
@@ -49,3 +50,19 @@ class TestFixtureManager(TestCase):
         with self.assertRaises(managers.ConfigurationError) as exc:
             managers.manager.validate(config)
         self.assertEqual(exc.exception.unregistered_functions, set([bad_function]))
+
+
+class TestRegistration(TestCase):
+
+    def test_register_method(self):
+        self.assertEqual(managers.manager.registry, {})
+        managers.manager.register(customer)
+        self.assertEqual(managers.manager.registry, {'customer': customer})
+
+    def test_register_decorator(self):
+        self.assertEqual(managers.manager.registry, {})
+        registered_func = managers.register(customer)
+        self.assertEqual(managers.manager.registry, {'customer': registered_func})
+
+    def tearDown(self):
+        managers.manager._registry = {}
