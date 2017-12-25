@@ -3,6 +3,8 @@ from __future__ import unicode_literals, absolute_import
 
 import django
 
+import quade
+
 DEBUG = True
 USE_TZ = True
 
@@ -22,7 +24,6 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sites",
-    "quade",
 ]
 
 SITE_ID = 1
@@ -31,3 +32,5 @@ if django.VERSION >= (1, 10):
     MIDDLEWARE = ()
 else:
     MIDDLEWARE_CLASSES = ()
+
+QUADE = quade.Settings()

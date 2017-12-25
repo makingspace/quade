@@ -4,7 +4,7 @@ from tests import factories
 
 
 # Fixtures in this file are NOT decorated with @register because their registration is handled
-# by being mocked; see mksp.apps.qa.tests.mock
+# by being mocked; see tests.mock.
 
 
 def customer():
@@ -16,4 +16,3 @@ def customer():
 def staff_user(**kwargs):
     staff = factories.UserStaff(**kwargs)
     return ' '.join([staff.first_name, staff.last_name])
-

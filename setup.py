@@ -56,7 +56,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     include_package_data=True,
-    install_requires=["django-fsm==1.6", "django-light-enums==0.1.6", "jsonfield==2.0.2"],
+    install_requires=["attrs==17.3.0", "django-fsm==1.6", "django-light-enums==0.1.6", "jsonfield==2.0.2"],
     license="MIT",
     zip_safe=False,
     keywords='django',

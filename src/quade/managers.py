@@ -1,5 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import importlib
+
+from django.conf import settings
 from django.db import transaction
 
 
@@ -23,8 +26,7 @@ class FixtureManager:
         return self._registry
 
     def setup(self):
-        from . import fixtures  # isort:skip
-        # TODO: Allow customization
+        importlib.import_module(settings.QUADE.fixtures_file)
 
     def create(self, config):
         instructions = []
