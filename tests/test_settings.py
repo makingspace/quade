@@ -59,6 +59,11 @@ class TestIterable(TestModifyingDjangoSettings, TestCase):
     active_on_staging = True
     active_on_prod = False
 
+    def test_iterable(self):
+        with override_settings(ENV='testing'):
+            qs = quade.Settings(allowed_envs=['test', 'testing_2'])
+            self.assertFalse(qs._modify_installed_apps())
+
 
 class TestString(TestModifyingDjangoSettings, TestCase):
 
@@ -66,6 +71,16 @@ class TestString(TestModifyingDjangoSettings, TestCase):
     active_on_debug = False
     active_on_staging = True
     active_on_prod = False
+
+    def test_exactness_when_allowed_env_is_substring(self):
+        with override_settings(ENV='testing'):
+            qs = quade.Settings(allowed_envs='test')
+            self.assertFalse(qs._modify_installed_apps())
+
+    def test_exactness_when_django_env_is_substring(self):
+        with override_settings(ENV='testing'):
+            qs = quade.Settings(allowed_envs='testing_2')
+            self.assertFalse(qs._modify_installed_apps())
 
 
 class TestTypeError(TestCase):
