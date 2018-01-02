@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+import django
 import quade
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -37,23 +38,39 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-MIDDLEWARE_CLASSES = [
+middlewares = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+if django.VERSION >= (1, 10):
+    MIDDLEWARE = middlewares
+else:
+    MIDDLEWARE_CLASSES = middlewares
+
+
 ROOT_URLCONF = 'example.urls'
 
 TEMPLATES = [
+    # Quade views
+    {
+        'BACKEND': 'django_jinja.backend.Jinja2',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'app_dirname': 'jinja2',
+        },
+    },
+    # Admin views
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

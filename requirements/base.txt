@@ -1,5 +1,6 @@
 attrs==17.3.0
 celery==4.1.0
 django-fsm==1.6
+django-jinja==2.4.1
 django-light-enums==0.1.6
 jsonfield==2.0.2

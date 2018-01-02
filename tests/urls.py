@@ -1,6 +1,5 @@
-"""
-This URLconf exists because Django expects ROOT_URLCONF to exist.
-"""
+from django.conf.urls import include, url
 
-
-urlpatterns = []
+urlpatterns = [
+    url(r'^quade/', include('quade.urls')),
+]

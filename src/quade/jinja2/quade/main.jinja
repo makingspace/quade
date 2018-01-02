@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <title>Quade</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <h1>Quade</h1>
+
+      <h3>Start New Test</h3>
+
+      {% if form %}
+        <p class="help-text">
+        Your test will be created in a unready state;
+        it will take a few moments for it to be set up.
+        You will have to refresh the page to see whether it's ready.
+        Thanks for your patience!
+        </p>
+
+        <form action="{{ url('qa-main') }}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input class="btn btn-primary" type="submit" value="Execute" />
+        </form>
+      {% else %}
+        There are no test scenarios at this time.
+      {% endif %}
+
+      <h3>Recent Tests</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Scenario</td>
+              <th>Info</td>
+              <th>Created By</td>
+              <th>Created On</td>
+              <th>Updated On</td>
+              <th>Status</td>
+              <th>Actions</td>
+            </tr>
+            </thead>
+          <tbody>
+          {% for record in recent_tests %}
+            <tr>
+              <td>{{ record.id }}</td>
+              <td>{{ record.scenario }}</td>
+              <td>{{ record.instructions|linebreaksbr|urlize }}</td>
+              <td>{{ record.created_by }}</td>
+              <td>{{ record.created_on|localtime|date }} {{ record.created_on|localtime|time }}</td>
+              <td>{{ record.created_on|localtime|date }} {{ record.created_on|localtime|time }}</td>
+              <td>{{ record|status }}</td>
+              <td>
+                {% if record.status != record._meta.model.Status.DONE %}
+                <form style='display: inline;' action="{{ url('qa-mark-done', test_record_id=record.id) }}" method="POST">
+                {% csrf_token %}
+                  <input type="submit" value="Mark Done" class="btn btn-info">
+                </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  </body>
+</html>
