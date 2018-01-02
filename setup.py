@@ -56,7 +56,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     include_package_data=True,
-    install_requires=["attrs", "django-fsm==1.6", "django-light-enums", "jsonfield"],
+    install_requires=["attrs", "celery", "django-fsm==1.6", "django-light-enums", "jsonfield"],
     license="MIT",
     zip_safe=False,
     keywords='django',
