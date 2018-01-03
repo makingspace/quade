@@ -2,6 +2,7 @@ from collections import Iterable
 
 from attr import attrib, attrs
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.utils import six
 
 
@@ -16,6 +17,7 @@ __all__ = [
 class Setting(object):
     name = attrib()
     default = attrib()
+    validator = attrib(default=None)
 
 
 class AllEnvs(object):
@@ -39,8 +41,15 @@ def define_setting(name, **kwargs):
     return s
 
 
+def validate_allowed_envs(val):
+    if any([val in [AllEnvs, DebugEnvs], callable(val), isinstance(val, Iterable)]):
+        return val
+    else:
+        raise TypeError
+
+
 define_setting(name='fixtures_file', default='quade.fixtures')
-define_setting(name='allowed_envs', default=DebugEnvs)
+define_setting(name='allowed_envs', default=DebugEnvs, validator=validate_allowed_envs)
 
 
 class Settings(object):
@@ -51,6 +60,13 @@ class Settings(object):
         self._construction_complete = False
         for setting in all_settings.values():
             val = kwargs.pop(setting.name, setting.default)
+            if setting.validator:
+                try:
+                    val = setting.validator(val)
+                except:
+                    raise ImproperlyConfigured(
+                        "{} is not a valid value for Quade setting {}".format(val, setting.name)
+                    )
             setattr(self, setting.name, val)
         if kwargs:
             suffix = '' if len(kwargs) == 1 else 's'
@@ -68,10 +84,6 @@ class Settings(object):
             def func(s): return s.ENV == self.allowed_envs
         elif isinstance(self.allowed_envs, Iterable):
             def func(s): return s.ENV in self.allowed_envs
-        else:
-            raise TypeError("Value '{}' for 'allowed_envs' is an unexpected type".format(
-                    self.allowed_envs)
-            )
 
         if func(settings):
             settings.INSTALLED_APPS += ['quade']

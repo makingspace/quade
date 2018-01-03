@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, override_settings
 
 import quade
@@ -83,10 +84,10 @@ class TestString(TestModifyingDjangoSettings, TestCase):
             self.assertFalse(qs._modify_installed_apps())
 
 
-class TestTypeError(TestCase):
+class TestInteger(TestCase):
 
-    def test_type_error(self):
-        with self.assertRaises(TypeError):
+    def test_bad_type_raises(self):
+        with self.assertRaises(ImproperlyConfigured):
             quade.Settings(allowed_envs=42)
 
 
