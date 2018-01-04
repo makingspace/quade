@@ -11,4 +11,4 @@ __all__ = [
 
 
 __version__ = '0.0.1'
-default_app_config = 'quade.apps.QaConfig'
+default_app_config = 'quade.apps.QuadeConfig'

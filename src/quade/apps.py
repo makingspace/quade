@@ -6,7 +6,7 @@ from django.conf import settings
 from .managers import manager
 
 
-class QaConfig(AppConfig):
+class QuadeConfig(AppConfig):
     name = 'quade'
 
     def ready(self):

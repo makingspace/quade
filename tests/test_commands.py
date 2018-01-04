@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.six import StringIO
 
 from quade import managers
-from .mock import QaMock
+from .mock import QuadeMock
 from .fixtures import customer
 
 
@@ -18,7 +18,7 @@ class TestListFixturesCommand(TestCase):
         call_command(self.command_name, stdout=self.out)
         self.assertEqual(self.out.getvalue(), "0 functions are registered with Quade.\n")
 
-    @QaMock(managers, funcs=[customer])
+    @QuadeMock(managers, funcs=[customer])
     def test_one_fixture(self):
         call_command(self.command_name, stdout=self.out)
         output = self.out.getvalue().split('\n')
@@ -27,7 +27,7 @@ class TestListFixturesCommand(TestCase):
         self.assertEqual(output[1], "- customer")
         self.assertEqual(output[2], "")
 
-    @QaMock(managers)
+    @QuadeMock(managers)
     def test_two_fixtures(self):
         call_command(self.command_name, stdout=self.out)
         output = self.out.getvalue().split('\n')

@@ -7,7 +7,7 @@ class Default(object):
     pass
 
 
-class QaMock:
+class QuadeMock:
 
     """
     Monkey patch the FixtureManager's registry, and automatically unapply the patch afterwards.

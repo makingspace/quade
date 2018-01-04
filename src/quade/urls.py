@@ -5,10 +5,10 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.MainView.as_view(), name='qa-main'),
+    url(r'^$', views.MainView.as_view(), name='quade-main'),
     url(
         r'^record/(?P<test_record_id>[0-9]+)/done/$',
         views.MarkDoneView.as_view(),
-        name='qa-mark-done'
+        name='quade-mark-done'
     ),
 ]

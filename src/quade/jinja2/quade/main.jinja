@@ -20,7 +20,7 @@
             Thanks for your patience!
           </p>
 
-          <form id="scenario-executor" action="{{ url('qa-main') }}" method="post">
+          <form id="scenario-executor" action="{{ url('quade-main') }}" method="post">
               {% csrf_token %}
               {{ form }}
               <input class="btn btn-primary" type="submit" value="Execute" />
@@ -60,7 +60,7 @@
               <td>{{ record|status }}</td>
               <td>
                 {% if record.status != record._meta.model.Status.DONE %}
-                <form style='display: inline;' action="{{ url('qa-mark-done', test_record_id=record.id) }}" method="POST">
+                <form style='display: inline;' action="{{ url('quade-mark-done', test_record_id=record.id) }}" method="POST">
                 {% csrf_token %}
                   <input type="submit" value="Mark Done" class="btn btn-info">
                 </form>

@@ -14,14 +14,14 @@ from .managers import manager, ConfigurationError
 from .receivers import connect_qa_object_receiver
 
 
-class QATestScenarioManager(m.QuerySet):
+class ScenarioManager(m.QuerySet):
 
     def active(self):
-        return self.filter(status=QATestScenario.Status.ACTIVE)
+        return self.filter(status=Scenario.Status.ACTIVE)
 
 
 @python_2_unicode_compatible
-class QATestScenario(m.Model):
+class Scenario(m.Model):
     """
     A specific scenario that QA tests will be run against.
     """
@@ -34,7 +34,7 @@ class QATestScenario(m.Model):
         INACTIVE = 0
         ACTIVE = 10
 
-    objects = QATestScenarioManager.as_manager()
+    objects = ScenarioManager.as_manager()
 
     REGISTRY = {}
 
@@ -60,7 +60,7 @@ class QATestScenario(m.Model):
         self.deactivate()
 
     def hard_delete(self, *args, **kwargs):
-        super(QATestScenario, self).delete(*args, **kwargs)
+        super(Scenario, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         try:
@@ -69,10 +69,10 @@ class QATestScenario(m.Model):
             raise ValidationError("config {} contains unregistered function(s): {}".format(
                 self.config, ','.join(exc.unregistered_functions)
             ))
-        super(QATestScenario, self).save(*args, **kwargs)
+        super(Scenario, self).save(*args, **kwargs)
 
 
-class QATestRecord(m.Model):
+class Record(m.Model):
     """
     A record of setting up, and possibly executing, a particular test scenario.
     """
@@ -87,7 +87,7 @@ class QATestRecord(m.Model):
         IN_PROGRESS = 10
         DONE = 20
 
-    scenario = m.ForeignKey(QATestScenario, on_delete=m.PROTECT)
+    scenario = m.ForeignKey(Scenario, on_delete=m.PROTECT)
     instructions = m.TextField(
         blank=True,
         null=True,
@@ -122,9 +122,9 @@ class QATestRecord(m.Model):
 
 
 @python_2_unicode_compatible
-class QAObject(m.Model):
+class RecordedObject(m.Model):
     """
-    A joiner table for creating a generic many-to-many relation between QATestRecords and any other
+    A joiner table for creating a generic many-to-many relation between Records and any other
     objects.
     """
 
@@ -134,7 +134,7 @@ class QAObject(m.Model):
     content_type = m.ForeignKey(ContentType, on_delete=m.CASCADE)
     object_id = m.PositiveIntegerField()
     object = GenericForeignKey('content_type', 'object_id')
-    record = m.ForeignKey(QATestRecord, related_name='qa_objects', on_delete=m.CASCADE)
+    record = m.ForeignKey(Record, related_name='recorded_objects', on_delete=m.CASCADE)
 
     def __str__(self):
-        return "QAObject #{}: {}".format(self.pk, self.object)
+        return "RecordedObject #{}: {}".format(self.pk, self.object)

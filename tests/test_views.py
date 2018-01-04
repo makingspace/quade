@@ -15,20 +15,20 @@ from django_webtest import WebTest
 from mock import mock
 
 from quade import managers
-from quade.models import QATestRecord
+from quade.models import Record
 
-from .mock import QaMock
+from .mock import QuadeMock
 from . import factories
 
 
 class TestViewPermissions(WebTest):
 
     def setUp(self):
-        self.test_record = factories.QATestRecord()
+        self.test_record = factories.Record()
         self.urls = [
-            ('get', reverse('qa-main')),
-            ('post', reverse('qa-main')),
-            ('post', reverse('qa-mark-done', args=[self.test_record.id])),
+            ('get', reverse('quade-main')),
+            ('post', reverse('quade-main')),
+            ('post', reverse('quade-mark-done', args=[self.test_record.id])),
         ]
 
     def test_superusers_can_access(self):
@@ -60,21 +60,21 @@ class TestViews(WebTest):
         self.superuser = factories.UserAdmin()
         self.app.set_user(self.superuser)
 
-    @QaMock(managers)
+    @QuadeMock(managers)
     def test_execute(self):
-        initial_count = QATestRecord.objects.count()
+        initial_count = Record.objects.count()
         initial_user_count = User.objects.count()
-        factories.QATestScenario()  # Noise
-        scenario2 = factories.QATestScenario(
+        factories.Scenario()  # Noise
+        scenario2 = factories.Scenario(
             config=[('customer', {}), ('staff_user', {})]
         )
-        url = reverse('qa-main')
+        url = reverse('quade-main')
         self.app.post(url, params={'scenarios': scenario2.slug})
-        self.assertEqual(QATestRecord.objects.count(), initial_count + 1)
-        new_record = QATestRecord.objects.last()
+        self.assertEqual(Record.objects.count(), initial_count + 1)
+        new_record = Record.objects.last()
         self.assertEqual(new_record.created_by, self.superuser)
         self.assertEqual(new_record.scenario, scenario2)
-        self.assertEqual(new_record.status, QATestRecord.Status.READY)
+        self.assertEqual(new_record.status, Record.Status.READY)
         self.assertEqual(User.objects.count(), initial_user_count + 2)
         # Get the newly created Users.
         new_customer = User.objects.filter(is_staff=False).last()
@@ -88,30 +88,30 @@ class TestViews(WebTest):
                 new_staff.last_name,
             )
         )
-        # The record has set up the newly-created users as QAObjects.
+        # The record has set up the newly-created users as RecordedObjects.
         self.assertEqual(
-            {obj.object for obj in new_record.qa_objects.all()}, {new_customer, new_staff}
+            {obj.object for obj in new_record.recorded_objects.all()}, {new_customer, new_staff}
         )
 
-    @QaMock(managers)
+    @QuadeMock(managers)
     def test_execute_is_async(self):
-        scenario = factories.QATestScenario(config=[('customer', {})])
-        url = reverse('qa-main')
+        scenario = factories.Scenario(config=[('customer', {})])
+        url = reverse('quade-main')
         with mock.patch('quade.views.execute_test_task') as mock_task:
             self.app.post(url, params={'scenarios': scenario.slug})
-        new_record = QATestRecord.objects.last()
+        new_record = Record.objects.last()
         mock_task.delay.assert_called_once_with(new_record.id)
-        self.assertEqual(new_record.status, QATestRecord.Status.NOT_READY)
+        self.assertEqual(new_record.status, Record.Status.NOT_READY)
 
     def test_execute_without_test_scenario_defined(self):
-        initial_count = QATestRecord.objects.count()
-        url = reverse('qa-main')
+        initial_count = Record.objects.count()
+        url = reverse('quade-main')
         resp = self.app.post(url, params={'scenarios': 'nothing-exists-yet'})
-        self.assertEqual(QATestRecord.objects.count(), initial_count)
+        self.assertEqual(Record.objects.count(), initial_count)
         self.assertIn('Select a valid choice.', resp.text)
 
     def test_main_page_with_no_scenarios(self):
-        url = reverse('qa-main')
+        url = reverse('quade-main')
         resp = self.app.get(url)
         self.assertIn('There are no test scenarios at this time.', resp.text)
         self.assertNotIn('form id="scenario-executor"', resp.text)
@@ -120,23 +120,23 @@ class TestViews(WebTest):
         """When Quade is disabled, the main page shows a message to this effect."""
         qs = quade.Settings(allowed_envs=lambda _: False)
         with override_settings(QUADE=qs):
-            url = reverse('qa-main')
+            url = reverse('quade-main')
             resp = self.app.get(url)
         self.assertIn('Quade has been disabled on this environment.', resp.text)
         self.assertNotIn('Execute', resp.text)
 
     def test_main_page_scenario_selector_when_disabled(self):
         """When Quade is disabled, the scenario selector is not shown."""
-        factories.QATestScenario()
+        factories.Scenario()
         qs = quade.Settings(allowed_envs=lambda _: False)
         with override_settings(QUADE=qs):
-            url = reverse('qa-main')
+            url = reverse('quade-main')
             resp = self.app.get(url)
         self.assertNotIn('form id="scenario-executor"', resp.text)
 
     def test_mark_done(self):
-        test_record = factories.QATestRecord()
-        url = reverse('qa-mark-done', args=[test_record.id])
+        test_record = factories.Record()
+        url = reverse('quade-mark-done', args=[test_record.id])
         self.app.post(url)
         test_record.refresh_from_db()
-        self.assertEqual(test_record.status, QATestRecord.Status.DONE)
+        self.assertEqual(test_record.status, Record.Status.DONE)

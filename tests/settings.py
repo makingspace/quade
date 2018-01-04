@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sites",
     "django.contrib.sessions",
-    "quade.apps.QaConfig",
+    "quade.apps.QuadeConfig",
 ]
 
 SITE_ID = 1

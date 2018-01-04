@@ -34,28 +34,28 @@ class UserAdmin(User):
 # Factories for Quade models
 
 
-class QATestScenario(DjangoModelFactory):
+class Scenario(DjangoModelFactory):
 
     class Meta:
-        model = quade_models.QATestScenario
+        model = quade_models.Scenario
 
     slug = Sequence(lambda n: 'scenario-{}'.format(n))
     description = FuzzyText(length=15)
 
 
-class QATestRecord(DjangoModelFactory):
+class Record(DjangoModelFactory):
 
     class Meta:
-        model = quade_models.QATestRecord
+        model = quade_models.Record
 
-    scenario = SubFactory(QATestScenario)
+    scenario = SubFactory(Scenario)
     created_by = SubFactory(UserAdmin)
 
 
-class QAObject(DjangoModelFactory):
+class RecordedObject(DjangoModelFactory):
 
     class Meta:
-        model = quade_models.QAObject
+        model = quade_models.RecordedObject
 
     object = SubFactory(User)
-    record = SubFactory(QATestRecord)
+    record = SubFactory(Record)

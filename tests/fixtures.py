@@ -8,7 +8,7 @@ from tests import factories
 
 
 def customer():
-    """The simplest possible fixture for the QA Widget."""
+    """The simplest possible fixture."""
     customer = factories.User()
     return ' '.join([customer.first_name, customer.last_name])
 
