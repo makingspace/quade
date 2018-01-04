@@ -1,6 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from django.contrib.auth import get_user_model
+from django.test import override_settings
+
+import quade
+
+
 User = get_user_model()
 try:
     from django.urls import reverse
@@ -109,6 +114,25 @@ class TestViews(WebTest):
         url = reverse('qa-main')
         resp = self.app.get(url)
         self.assertIn('There are no test scenarios at this time.', resp.text)
+        self.assertNotIn('form id="scenario-executor"', resp.text)
+
+    def test_main_page_when_disabled(self):
+        """When Quade is disabled, the main page shows a message to this effect."""
+        qs = quade.Settings(allowed_envs=lambda _: False)
+        with override_settings(QUADE=qs):
+            url = reverse('qa-main')
+            resp = self.app.get(url)
+        self.assertIn('Quade has been disabled on this environment.', resp.text)
+        self.assertNotIn('Execute', resp.text)
+
+    def test_main_page_scenario_selector_when_disabled(self):
+        """When Quade is disabled, the scenario selector is not shown."""
+        factories.QATestScenario()
+        qs = quade.Settings(allowed_envs=lambda _: False)
+        with override_settings(QUADE=qs):
+            url = reverse('qa-main')
+            resp = self.app.get(url)
+        self.assertNotIn('form id="scenario-executor"', resp.text)
 
     def test_mark_done(self):
         test_record = factories.QATestRecord()

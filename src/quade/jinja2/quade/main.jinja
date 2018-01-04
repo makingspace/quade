@@ -11,21 +11,27 @@
 
       <h3>Start New Test</h3>
 
-      {% if form %}
-        <p class="help-text">
-        Your test will be created in a unready state;
-        it will take a few moments for it to be set up.
-        You will have to refresh the page to see whether it's ready.
-        Thanks for your patience!
-        </p>
+      {% if allowed %}
+        {% if form %}
+          <p class="help-text">
+            Your test will be created in a unready state;
+            it will take a few moments for it to be set up.
+            You will have to refresh the page to see whether it's ready.
+            Thanks for your patience!
+          </p>
 
-        <form action="{{ url('qa-main') }}" method="post">
-            {% csrf_token %}
-            {{ form }}
-            <input class="btn btn-primary" type="submit" value="Execute" />
-        </form>
+          <form id="scenario-executor" action="{{ url('qa-main') }}" method="post">
+              {% csrf_token %}
+              {{ form }}
+              <input class="btn btn-primary" type="submit" value="Execute" />
+          </form>
+        {% else %}
+          There are no test scenarios at this time.
+        {% endif %}
       {% else %}
-        There are no test scenarios at this time.
+        <p class="help-text">
+          Quade has been disabled on this environment.
+        </p>
       {% endif %}
 
       <h3>Recent Tests</h3>

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sites",
     "django.contrib.sessions",
+    "quade.apps.QaConfig",
 ]
 
 SITE_ID = 1
@@ -65,7 +66,7 @@ if django.VERSION >= (1, 10):
 else:
     MIDDLEWARE_CLASSES = middlewares
 
-QUADE = quade.Settings()
+QUADE = quade.Settings(allowed_envs=quade.AllEnvs)
 
 celery.current_app.conf.CELERY_ALWAYS_EAGER = True
 celery.current_app.conf.CELERY_EAGER_PROPAGATES_EXCEPTIONS = True

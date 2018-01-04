@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from django import forms
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 try:
@@ -49,6 +50,7 @@ class MainView(SuperUserAccessMixin, FormView):
         # (The default "-------" will always be present.)
         if self.request.method == 'GET' and len(context['form'].fields['scenarios'].choices) <= 1:
             context['form'] = None
+        context['allowed'] = settings.QUADE.allowed
         context['recent_tests'] = QATestRecord.objects.all().order_by(
             '-created_on'
         ).select_related('scenario')[:30]

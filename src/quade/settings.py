@@ -71,11 +71,11 @@ class Settings(object):
         if kwargs:
             suffix = '' if len(kwargs) == 1 else 's'
             raise AttributeError("No such setting{}: '{}'".format(suffix, "', '".join(kwargs.keys())))
-        self._modify_installed_apps()
         self._construction_complete = True
 
-    def _modify_installed_apps(self):
-        """Based on the settings, possibly modify INSTALLED_APPS to activate Quade."""
+    @property
+    def allowed(self):
+        """Based on the settings, determine if scenarios are allowed to run on this environment."""
         if self.allowed_envs in [AllEnvs, DebugEnvs]:
             func = self.allowed_envs.func
         elif callable(self.allowed_envs):
@@ -86,7 +86,6 @@ class Settings(object):
             def func(s): return s.ENV in self.allowed_envs
 
         if func(settings):
-            settings.INSTALLED_APPS += ['quade']
             return True
         else:
             return False

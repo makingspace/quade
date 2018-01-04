@@ -1,5 +1,9 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, override_settings
+from mock import mock
 
 import quade
 
@@ -11,20 +15,32 @@ class TestModifyingDjangoSettings(object):
     active_on_staging = None
     active_on_prod = None
 
+    def assertProperSetup(self, expected):
+        quade_config = apps.get_app_config('quade')
+        with mock.patch('quade.apps.manager') as mock_manager:
+            quade_config.ready()
+            if expected:
+                mock_manager.setup.assert_called_once()
+            else:
+                mock_manager.setup.assert_not_called()
+
+    def setUp(self):
+        self.QUADE = quade.Settings(allowed_envs=self.allowed_envs)
+
     def test_debug(self):
-        with override_settings(DEBUG=True, ENV='testing', FOO='bar'):
-            qs = quade.Settings(allowed_envs=self.allowed_envs)
-            self.assertEqual(qs._modify_installed_apps(), self.active_on_debug)
+        with override_settings(DEBUG=True, ENV='testing', FOO='bar', QUADE=self.QUADE):
+            self.assertEqual(self.QUADE.allowed, self.active_on_debug)
+            self.assertProperSetup(self.active_on_debug)
 
     def test_staging(self):
-        with override_settings(DEBUG=True, ENV='staging', FOO='bar'):
-            qs = quade.Settings(allowed_envs=self.allowed_envs)
-            self.assertEqual(qs._modify_installed_apps(), self.active_on_staging)
+        with override_settings(DEBUG=True, ENV='staging', FOO='bar', QUADE=self.QUADE):
+            self.assertEqual(self.QUADE.allowed, self.active_on_staging)
+            self.assertProperSetup(self.active_on_staging)
 
     def test_prod(self):
-        with override_settings(DEBUG=False, ENV='prod', FOO='quux'):
-            qs = quade.Settings(allowed_envs=self.allowed_envs)
-            self.assertEqual(qs._modify_installed_apps(), self.active_on_prod)
+        with override_settings(DEBUG=False, ENV='prod', FOO='quux', QUADE=self.QUADE):
+            self.assertEqual(self.QUADE.allowed, self.active_on_prod)
+            self.assertProperSetup(self.active_on_prod)
 
 
 class TestAllEnvs(TestModifyingDjangoSettings, TestCase):
@@ -63,7 +79,7 @@ class TestIterable(TestModifyingDjangoSettings, TestCase):
     def test_iterable(self):
         with override_settings(ENV='testing'):
             qs = quade.Settings(allowed_envs=['test', 'testing_2'])
-            self.assertFalse(qs._modify_installed_apps())
+            self.assertFalse(qs.allowed)
 
 
 class TestString(TestModifyingDjangoSettings, TestCase):
@@ -76,12 +92,12 @@ class TestString(TestModifyingDjangoSettings, TestCase):
     def test_exactness_when_allowed_env_is_substring(self):
         with override_settings(ENV='testing'):
             qs = quade.Settings(allowed_envs='test')
-            self.assertFalse(qs._modify_installed_apps())
+            self.assertFalse(qs.allowed)
 
     def test_exactness_when_django_env_is_substring(self):
         with override_settings(ENV='testing'):
             qs = quade.Settings(allowed_envs='testing_2')
-            self.assertFalse(qs._modify_installed_apps())
+            self.assertFalse(qs.allowed)
 
 
 class TestInteger(TestCase):
