@@ -140,3 +140,10 @@ class TestSettings(TestCase):
         qs = quade.Settings()
         with self.assertRaises(RuntimeError):
             qs.fixtures_file = 'my_module.fixtures'
+
+
+class TestAccessTestFunc(TestCase):
+
+    def test_callable_required(self):
+        with self.assertRaises(ImproperlyConfigured):
+            quade.Settings(access_test_func='Not a callable')

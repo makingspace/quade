@@ -32,6 +32,11 @@ class DebugEnvs(object):
     def func(s): return s.DEBUG
 
 
+def is_superuser(view):
+    """Allow access to the view if the requesting user is a superuser."""
+    return view.request.user.is_superuser
+
+
 all_settings = {}
 
 
@@ -48,8 +53,16 @@ def validate_allowed_envs(val):
         raise TypeError
 
 
+def validate_access_test_func(val):
+    if callable(val):
+        return val
+    else:
+        raise TypeError
+
+
 define_setting(name='fixtures_file', default='quade.fixtures')
 define_setting(name='allowed_envs', default=DebugEnvs, validator=validate_allowed_envs)
+define_setting(name='access_test_func', default=is_superuser, validator=validate_access_test_func)
 
 
 class Settings(object):

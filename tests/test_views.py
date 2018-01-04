@@ -1,12 +1,8 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from django.contrib.auth import get_user_model
-from django.test import override_settings
-
-import quade
-
-
 User = get_user_model()
+from django.test import override_settings
 try:
     from django.urls import reverse
 except ImportError:
@@ -14,6 +10,7 @@ except ImportError:
 from django_webtest import WebTest
 from mock import mock
 
+import quade
 from quade import managers
 from quade.models import Record
 
@@ -21,7 +18,12 @@ from .mock import QuadeMock
 from . import factories
 
 
-class TestViewPermissions(WebTest):
+class TestViewPermissionsBase(object):
+
+    QUADE = None
+    superuser_access = None
+    staff_access = None
+    user_access = None
 
     def setUp(self):
         self.test_record = factories.Record()
@@ -31,27 +33,53 @@ class TestViewPermissions(WebTest):
             ('post', reverse('quade-mark-done', args=[self.test_record.id])),
         ]
 
-    def test_superusers_can_access(self):
-        superuser = factories.UserAdmin()
-        self.app.set_user(superuser)
+    def _access_checker(self, allowed):
         for method, url in self.urls:
-            resp = getattr(self.app, method)(url)
+            resp = getattr(self.app, method)(url, expect_errors=not allowed)
             # Follow up to one redirect
             if resp.status_code == 302:
                 resp = resp.follow()
-            self.assertEqual(resp.status_code, 200)
+        return resp
 
-    def test_regular_users_cannot_access(self):
-        user = factories.User()
-        self.app.set_user(user)
-        for method, url in self.urls:
-            getattr(self.app, method)(url, status=403)
+    def check_access(self, allowed):
+        expected_code = 200 if allowed else 403
+        if getattr(self, 'QUADE'):
+            with override_settings(QUADE=self.QUADE):
+                resp = self._access_checker(allowed)
+        else:
+            resp = self._access_checker(allowed)
 
-    def test_generic_staff_users_cannot_access(self):
+        self.assertEqual(resp.status_code, expected_code)
+
+    def test_superuser(self):
+        superuser = factories.UserAdmin()
+        self.app.set_user(superuser)
+        self.check_access(self.superuser_access)
+
+    def test_staff(self):
         staff = factories.UserStaff()
         self.app.set_user(staff)
-        for method, url in self.urls:
-            getattr(self.app, method)(url, status=403)
+        self.check_access(self.staff_access)
+
+    def test_regular_user(self):
+        user = factories.User()
+        self.app.set_user(user)
+        self.check_access(self.user_access)
+
+
+class TestDefaultViewPermissions(TestViewPermissionsBase, WebTest):
+
+    superuser_access = True
+    staff_access = False
+    user_access = False
+
+
+class TestCustomViewPermissions(TestViewPermissionsBase, WebTest):
+
+    QUADE = quade.Settings(access_test_func=lambda self: self.request.user.is_staff)
+    superuser_access = True
+    staff_access = True
+    user_access = False
 
 
 class TestViews(WebTest):

@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import functools
 from django import forms
 from django.conf import settings
 from django.http import HttpResponseRedirect
@@ -8,6 +9,7 @@ try:
     from django.urls import reverse, reverse_lazy
 except ImportError:
     from django.core.urlresolvers import reverse, reverse_lazy
+from django.utils.functional import cached_property
 from django.views.generic import View, FormView
 
 from .compatability import UserPassesTestMixin
@@ -15,9 +17,12 @@ from .models import Record, Scenario
 from .tasks import execute_test_task
 
 
-class SuperUserAccessMixin(UserPassesTestMixin):
+class QuadeAccessMixin(UserPassesTestMixin):
 
-    test_func = lambda x: x.request.user.is_superuser
+    @cached_property
+    def test_func(self):
+        return functools.partial(settings.QUADE.access_test_func, self)
+
     raise_exception = True
 
 
@@ -39,7 +44,7 @@ class ExecuteTestForm(forms.Form):
         return record
 
 
-class MainView(SuperUserAccessMixin, FormView):
+class MainView(QuadeAccessMixin, FormView):
     template_name = 'quade/main.jinja'
     form_class = ExecuteTestForm
     success_url = reverse_lazy('quade-main')
@@ -61,7 +66,7 @@ class MainView(SuperUserAccessMixin, FormView):
         return super(MainView, self).form_valid(form)
 
 
-class MarkDoneView(SuperUserAccessMixin, View):
+class MarkDoneView(QuadeAccessMixin, View):
     def post(self, request, test_record_id):
         record = get_object_or_404(Record, id=test_record_id)
         record.status = Record.Status.DONE
