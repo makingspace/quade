@@ -84,6 +84,13 @@ def validate_access_test_func(val):
         raise TypeError
 
 
+def validate_boolean(val):
+    if isinstance(val, bool):
+        return val
+    else:
+        raise TypeError
+
+
 class SettingsMeta(type):
 
     def __new__(cls, name, bases, dct):
@@ -124,6 +131,15 @@ class SettingsMeta(type):
             description="""A callable that restricts access to Quade's views. The callable should
             accept one argument (a Django view class).""",
             validator=validate_access_test_func
+        )
+        obj.define_setting(
+            name='use_celery',
+            default=False,
+            description="""Whether to use Celery to set up a Record.
+
+            Enabling this is useful if your fixtures take a long time to run.
+            """,
+            validator=validate_boolean,
         )
         return obj
 

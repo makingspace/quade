@@ -122,10 +122,11 @@ class TestViews(WebTest):
         )
 
     @QuadeMock(managers)
-    def test_execute_is_async(self):
+    def test_execute_is_asynchronous_with_proper_setting(self):
         scenario = factories.Scenario(config=[('customer', {})])
         url = reverse('quade-main')
-        with mock.patch('quade.views.execute_test_task') as mock_task:
+        qs = quade.Settings(use_celery=True)
+        with mock.patch('quade.views.execute_test_task') as mock_task, override_settings(QUADE=qs):
             self.app.post(url, params={'scenarios': scenario.slug})
         new_record = Record.objects.last()
         mock_task.delay.assert_called_once_with(new_record.id)

@@ -40,7 +40,10 @@ class ExecuteTestForm(forms.Form):
     def execute_test(self, created_by):
         scenario = self.cleaned_data['scenarios']
         record = Record.objects.create(scenario=scenario, created_by=created_by)
-        execute_test_task.delay(record.id)
+        if settings.QUADE.use_celery:
+            execute_test_task.delay(record.id)
+        else:
+            record.execute_test()
         return record
 
 
