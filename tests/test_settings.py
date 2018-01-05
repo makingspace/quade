@@ -141,6 +141,10 @@ class TestSettings(TestCase):
         with self.assertRaises(RuntimeError):
             qs.fixtures_file = 'my_module.fixtures'
 
+    def test_settings_cannot_be_deleted(self):
+        qs = quade.Settings()
+        with self.assertRaises(AttributeError):
+            del qs.fixtures_file
 
 class TestAccessTestFunc(TestCase):
 

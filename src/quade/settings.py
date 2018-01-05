@@ -1,23 +1,53 @@
+# This module is inspired by and indebted to Hypothesis' _settings module.
+# https://github.com/HypothesisWorks/hypothesis-python/blob/master/src/hypothesis/_settings.py
 from collections import Iterable
+from inspect import cleandoc
 
 from attr import attrib, attrs
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import six
+from six import with_metaclass
 
 
 __all__ = [
     'AllEnvs',
     'DebugEnvs',
     'Settings',
+    'is_superuser',
 ]
 
 
 @attrs
 class Setting(object):
+    """A descriptor that prevents deletion and provides a docstring."""
     name = attrib()
     default = attrib()
+    default_description = attrib(default='')
+    description = attrib(default='')
     validator = attrib(default=None)
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:  # pragma: no cover
+            return self
+        else:
+            try:
+                return obj.__dict__[self.name]
+            except KeyError:  # pragma: no cover
+                raise AttributeError(self.name)
+
+    def __set__(self, obj, value):
+        obj.__dict__[self.name] = value
+
+    def __delete__(self, obj):
+        raise AttributeError('Cannot delete attribute {}'.format(self.name))
+
+    @property
+    def __doc__(self):
+        return "{}\n\nDefault: {}".format(
+            cleandoc(self.description),
+            self.default_description or '``{}``'.format(self.default)
+        )
 
 
 class AllEnvs(object):
@@ -40,12 +70,6 @@ def is_superuser(view):
 all_settings = {}
 
 
-def define_setting(name, **kwargs):
-    s = Setting(name, **kwargs)
-    all_settings[name] = s
-    return s
-
-
 def validate_allowed_envs(val):
     if any([val in [AllEnvs, DebugEnvs], callable(val), isinstance(val, Iterable)]):
         return val
@@ -60,12 +84,51 @@ def validate_access_test_func(val):
         raise TypeError
 
 
-define_setting(name='fixtures_file', default='quade.fixtures')
-define_setting(name='allowed_envs', default=DebugEnvs, validator=validate_allowed_envs)
-define_setting(name='access_test_func', default=is_superuser, validator=validate_access_test_func)
+class SettingsMeta(type):
+
+    def __new__(cls, name, bases, dct):
+        obj = super(SettingsMeta, cls).__new__(cls, name, bases, dct)
+        obj.define_setting(
+            name='fixtures_file',
+            default='quade.fixtures',
+            description="""A dotted path to the location of your fixtures.""",
+        )
+        obj.define_setting(
+            name='allowed_envs',
+            default=DebugEnvs,
+            default_description=""":class:`.DebugEnvs`""",
+            description="""Controls which environments Quade can run on.
+
+            Allowed values are:
+
+            - :class:`.DebugEnvs`
+
+            - :class:`.AllEnvs`
+
+            - a string -- your ``django.conf.settings.ENV`` is compared exactly to this string
+
+            - an iterable -- your ``django.conf.settings.ENV`` is checked exactly for membership in
+              the iterable
+
+            - any callable that accepts one argument, the Django settings object
+
+            If Quade is not enabled, fixtures will not be loaded, but views will be available to
+            users with appropriate access, application models and tables can be accessed, etc.
+            """,
+            validator=validate_allowed_envs,
+        )
+        obj.define_setting(
+            name='access_test_func',
+            default=is_superuser,
+            default_description=""":func:`.is_superuser`""",
+            description="""A callable that restricts access to Quade's views. The callable should
+            accept one argument (a Django view class).""",
+            validator=validate_access_test_func
+        )
+        return obj
 
 
-class Settings(object):
+class Settings(with_metaclass(SettingsMeta)):
 
     _WHITELISTED_PROPERTIES = ['_construction_complete']
 
@@ -85,6 +148,12 @@ class Settings(object):
             suffix = '' if len(kwargs) == 1 else 's'
             raise AttributeError("No such setting{}: '{}'".format(suffix, "', '".join(kwargs.keys())))
         self._construction_complete = True
+
+    @classmethod
+    def define_setting(cls, name, **kwargs):
+        s = Setting(name, **kwargs)
+        all_settings[name] = s
+        setattr(cls, name, s)
 
     @property
     def allowed(self):
