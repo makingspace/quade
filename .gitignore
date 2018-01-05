@@ -36,3 +36,6 @@ example/db.sqlite3
 
 # PyCharm
 .idea/
+
+# Sphinx documentation
+docs/_build/
