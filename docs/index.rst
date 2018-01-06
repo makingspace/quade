@@ -13,5 +13,5 @@ Dive in with our :doc:`quickstart`!
    
    quickstart
    installation
+   models
    settings
-

@@ -24,6 +24,10 @@ class ScenarioManager(m.QuerySet):
 class Scenario(m.Model):
     """
     A specific scenario that QA tests will be run against.
+
+    The heart of a ``Scenario`` is the `config` attribute. `config` is a list of several fixtures,
+    possibly with arguments, which are executed sequentially to create and modify objects in the
+    database.
     """
 
     class Meta:
@@ -74,7 +78,7 @@ class Scenario(m.Model):
 
 class Record(m.Model):
     """
-    A record of setting up, and possibly executing, a particular test scenario.
+    A record of setting up, and possibly executing, a particular :class:`Scenario`.
     """
 
     class Meta:
@@ -124,8 +128,8 @@ class Record(m.Model):
 @python_2_unicode_compatible
 class RecordedObject(m.Model):
     """
-    A joiner table for creating a generic many-to-many relation between Records and any other
-    objects.
+    A joiner table for creating a generic many-to-many relation between :class:`Records <Record>`
+    and any other objects.
     """
 
     class Meta:

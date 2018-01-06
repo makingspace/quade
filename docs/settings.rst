@@ -15,5 +15,5 @@ Available Settings
 Convenience Classes and Methods
 -------------------------------
 
-.. automodule:: settings
+.. automodule:: quade.settings
    :members:

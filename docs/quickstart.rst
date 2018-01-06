@@ -32,7 +32,7 @@ Quickstart
 
     QUADE = quade.settings(fixtures_file='fixtures')
 
-4. Enter the Django shell and create a ``Scenario`` that uses this fixture::
+4. Enter the Django shell and create a :class:`.Scenario` that uses this fixture::
 
     from quade.models import Scenario
     Scenario.objects.create(
@@ -45,4 +45,4 @@ Quickstart
 5. Start your project's webserver and visit the main Quade page. You will be able to generate new
    users on demand by selecting the "Single User" scenario and executing it.
 
-6. Begin creating your own fixtures and Scenarios!
+6. Begin creating your own fixtures and :class:`Scenarios <.Scenario>`!
