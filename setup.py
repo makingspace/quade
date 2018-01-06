@@ -43,7 +43,7 @@ if sys.argv[-1] == 'tag':
     sys.exit()
 
 readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+history = open('HISTORY.rst').read().replace('.. :changelog:\n\n', '')
 
 setup(
     name='quade',
