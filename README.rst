@@ -20,7 +20,7 @@ Installation
 
 * Check out the Quickstart_!
 
-.. _Quickstart: http://quade.readthedocs.io/en/master/quickstart.html
+.. _Quickstart: https://quade.readthedocs.io/en/stable/quickstart.html
 
 Links
 -----
@@ -29,4 +29,4 @@ Links
 * `Documentation at Read the Docs`_
 
 .. _Source on Github: https://github.com/makingspace/quade
-.. _Documentation at Read the Docs: http://quade.readthedocs.io/
+.. _Documentation at Read the Docs: https://quade.readthedocs.io/
