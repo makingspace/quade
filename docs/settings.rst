@@ -9,7 +9,7 @@ Available Settings
 .. module:: quade
 
 .. autoclass:: Settings
-   :members: access_test_func, allowed_envs, fixtures_file
+   :members: access_test_func, allowed_envs, fixtures_file, use_celery
    :undoc-members:
 
 Convenience Classes and Methods

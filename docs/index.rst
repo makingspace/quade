@@ -15,3 +15,4 @@ Dive in with our :doc:`quickstart`!
    installation
    models
    settings
+   celery

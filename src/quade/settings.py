@@ -138,6 +138,8 @@ class SettingsMeta(type):
             description="""Whether to use Celery to set up a Record.
 
             Enabling this is useful if your fixtures take a long time to run.
+
+            See :doc:`celery` for additional details.
             """,
             validator=validate_boolean,
         )
