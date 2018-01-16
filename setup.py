@@ -62,7 +62,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     include_package_data=True,
-    install_requires=["attrs", "django-fsm==1.6", "django-light-enums", "django_jinja", "jsonfield"],
+    install_requires=["attrs", "django-fsm==1.6", "django-light-enums", "django_jinja", "future", "jsonfield"],
     extras_require={
         "celery": "celery"
     },

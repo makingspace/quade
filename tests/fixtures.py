@@ -16,3 +16,9 @@ def customer():
 def staff_user(**kwargs):
     staff = factories.UserStaff(**kwargs)
     return ' '.join([staff.first_name, staff.last_name])
+
+
+def staff_user_id():
+    """Creates a staff user and returns its ID."""
+    staff = factories.UserStaff()
+    return staff.pk

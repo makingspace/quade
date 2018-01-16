@@ -117,7 +117,7 @@ class Record(m.Model):
     @transition(status, source=Status.NOT_READY, target=Status.READY, save=True)
     def _execute(self):
         with connect_qa_object_receiver(self):
-            instructions = manager.create(self.scenario.config)
+            instructions = manager.execute(self.scenario.config)
         self.instructions = instructions
 
     @transition(status, source=Status.NOT_READY, target=Status.FAILED, save=True)

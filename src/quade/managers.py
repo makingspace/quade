@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from builtins import str as text
 import importlib
 
 from django.conf import settings
@@ -28,12 +29,13 @@ class FixtureManager:
     def setup(self):
         importlib.import_module(settings.QUADE.fixtures_file)
 
-    def create(self, config):
+    def execute(self, config):
         instructions = []
         for step in config:
             func_name, kwargs = step
             func = self._registry[func_name]
-            instructions.append(func(**kwargs))
+            output = func(**kwargs)
+            instructions.append(text(output))
         return '\n'.join(instructions)
 
     def validate(self, config):

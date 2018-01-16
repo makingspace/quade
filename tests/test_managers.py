@@ -6,35 +6,41 @@ from django.test import TestCase
 
 from quade import managers
 from .mock import QuadeMock
-from . import factories
-from .fixtures import customer
+from .fixtures import customer, staff_user_id
 
 
-class TestFixtureManager(TestCase):
+class TestExecution(TestCase):
 
     @QuadeMock(managers)
-    def test_create_fixtures(self):
+    def test_execute_fixtures(self):
         initial_user_count = User.objects.count()
-        scenario = factories.Scenario(
-            config=[('customer', {}), ('staff_user', {})]
-        )
-        managers.manager.create(scenario.config)
+        config = [('customer', {}), ('staff_user', {})]
+        managers.manager.execute(config)
         self.assertEqual(User.objects.count(), initial_user_count + 2)
         self.assertEqual(User.objects.filter(is_staff=False).count(), 1)
         self.assertEqual(User.objects.filter(is_staff=False).count(), 1)
 
     @QuadeMock(managers)
-    def test_create_fixtures_with_kwargs(self):
+    def test_execute_fixtures_with_kwargs(self):
         initial_user_count = User.objects.count()
         first_name = 'Baron'
         last_name = 'von Count'
-        scenario = factories.Scenario(config=[('staff_user', {'first_name': first_name, 'last_name': last_name})])
-        managers.manager.create(scenario.config)
+        config = [('staff_user', {'first_name': first_name, 'last_name': last_name})]
+        managers.manager.execute(config)
         self.assertEqual(User.objects.count(), initial_user_count + 1)
         # Get the newly created User.
         new_staff = User.objects.last()
         self.assertEqual(new_staff.first_name, first_name)
         self.assertEqual(new_staff.last_name, last_name)
+
+    @QuadeMock(managers, funcs=[staff_user_id])
+    def test_instructions_coerced_to_text(self):
+        config = [('staff_user_id', {})]
+        instructions = managers.manager.execute(config)
+        self.assertEqual(instructions, '1')
+
+
+class TestValidation(TestCase):
 
     @QuadeMock(managers)
     def test_validation_succeeds(self):

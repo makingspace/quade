@@ -139,7 +139,7 @@ class TestModels(TestCase):
     def test_execute_test_that_errors(self):
         record = factories.Record(scenario__config=[('customer', {})])
         with mock.patch('quade.models.manager') as mocked_manager:
-            mocked_manager.create.side_effect = ValueError("Some error")
+            mocked_manager.execute.side_effect = ValueError("Some error")
             with self.assertRaises(ValueError):
                 record.execute_test()
         record.refresh_from_db()
