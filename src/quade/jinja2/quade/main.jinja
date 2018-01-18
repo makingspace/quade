@@ -14,10 +14,13 @@
       {% if allowed %}
         {% if form %}
           <p class="help-text">
-            Your test will be created in a unready state;
-            it will take a few moments for it to be set up.
-            You will have to refresh the page to see whether it's ready.
-            Thanks for your patience!
+            To set up a new test, select a scenario to execute.
+            {% if use_celery %}
+              Your test will be created in a unready state;
+              it will take a few moments for it to be set up.
+              You will have to refresh the page to see whether it's ready.
+              Thanks for your patience!
+            {% endif %}
           </p>
 
           <form id="scenario-executor" action="{{ url('quade-main') }}" method="post">

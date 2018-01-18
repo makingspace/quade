@@ -59,6 +59,7 @@ class MainView(QuadeAccessMixin, FormView):
         if self.request.method == 'GET' and len(context['form'].fields['scenarios'].choices) <= 1:
             context['form'] = None
         context['allowed'] = settings.QUADE.allowed
+        context['use_celery'] = settings.QUADE.use_celery
         context['recent_tests'] = Record.objects.all().order_by(
             '-created_on'
         ).select_related('scenario')[:30]

@@ -154,6 +154,26 @@ class TestViews(WebTest):
         self.assertIn('Quade has been disabled on this environment.', resp.text)
         self.assertNotIn('Execute', resp.text)
 
+    @QuadeMock(managers)
+    def test_main_page_when_use_celery_false(self):
+        factories.Scenario(config=[('customer', {})])
+        url = reverse('quade-main')
+        qs = quade.Settings(use_celery=False, allowed_envs=quade.AllEnvs)
+        with override_settings(QUADE=qs):
+            resp = self.app.get(url)
+        self.assertIn('To set up a new test, select a scenario to execute.', resp.text)
+        self.assertNotIn('Your test will be created in a unready state', resp.text)
+
+    @QuadeMock(managers)
+    def test_main_page_when_use_celery_true(self):
+        factories.Scenario(config=[('customer', {})])
+        url = reverse('quade-main')
+        qs = quade.Settings(use_celery=True, allowed_envs=quade.AllEnvs)
+        with override_settings(QUADE=qs):
+            resp = self.app.get(url)
+        self.assertIn('To set up a new test, select a scenario to execute.', resp.text)
+        self.assertIn('Your test will be created in a unready state', resp.text)
+
     def test_main_page_scenario_selector_when_disabled(self):
         """When Quade is disabled, the scenario selector is not shown."""
         factories.Scenario()
