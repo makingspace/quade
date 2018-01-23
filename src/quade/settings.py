@@ -182,7 +182,7 @@ class Settings(with_metaclass(SettingsMeta)):
             func = self.allowed_envs
         elif isinstance(self.allowed_envs, six.string_types):
             def func(s): return s.ENV == self.allowed_envs
-        elif isinstance(self.allowed_envs, Iterable):
+        elif isinstance(self.allowed_envs, Iterable):  # pragma: no branch
             def func(s): return s.ENV in self.allowed_envs
 
         if func(settings):
