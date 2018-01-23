@@ -15,6 +15,7 @@ from quade import managers
 from quade.models import Record
 
 from .mock import QuadeMock
+from .utils import requires_celery
 from . import factories
 
 
@@ -122,11 +123,12 @@ class TestViews(WebTest):
         )
 
     @QuadeMock(managers)
+    @requires_celery
     def test_execute_is_asynchronous_with_proper_setting(self):
         scenario = factories.Scenario(config=[('customer', {})])
         url = reverse('quade-main')
         qs = quade.Settings(use_celery=True)
-        with mock.patch('quade.views.execute_test_task') as mock_task, override_settings(QUADE=qs):
+        with mock.patch('quade.tasks.execute_test_task') as mock_task, override_settings(QUADE=qs):
             self.app.post(url, params={'scenarios': scenario.slug})
         new_record = Record.objects.last()
         mock_task.delay.assert_called_once_with(new_record.id)
@@ -165,6 +167,7 @@ class TestViews(WebTest):
         self.assertNotIn('Your test will be created in a unready state', resp.text)
 
     @QuadeMock(managers)
+    @requires_celery
     def test_main_page_when_use_celery_true(self):
         factories.Scenario(config=[('customer', {})])
         url = reverse('quade-main')

@@ -14,7 +14,6 @@ from django.views.generic import View, FormView
 
 from .compatability import UserPassesTestMixin
 from .models import Record, Scenario
-from .tasks import execute_test_task
 
 
 class QuadeAccessMixin(UserPassesTestMixin):
@@ -41,6 +40,7 @@ class ExecuteTestForm(forms.Form):
         scenario = self.cleaned_data['scenarios']
         record = Record.objects.create(scenario=scenario, created_by=created_by)
         if settings.QUADE.use_celery:
+            from .tasks import execute_test_task
             execute_test_task.delay(record.id)
         else:
             record.execute_test()

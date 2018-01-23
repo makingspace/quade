@@ -26,6 +26,7 @@ matrix:
       - python: "3.7-dev"
         env: DJANGO=master
       - env: TOXENV=docs
+      - env: TOXENV=celery
     exclude:
       - python: "2.7"
         env: DJANGO=2.0
