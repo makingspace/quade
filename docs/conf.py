@@ -103,7 +103,7 @@ html_theme = 'alabaster'
 # documentation.
 
 html_theme_options = {
-    'logo': 'quade.png',
+    'logo': 'quade.svg',
     'logo_name': True,
     'github_user': 'makingspace',
     'github_repo': 'quade',

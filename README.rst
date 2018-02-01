@@ -10,7 +10,9 @@ Quade
 
 Meet Quade, the friendly QA tool for Django!
 
-.. image:: docs/_static/quade_200x200.png
+.. image:: docs/_static/quade.*
+   :height: 200px
+   :width: 200px
 
 Quade is a Django app that makes quality assurance testing better. It
 handles repeatedly setting up the same data so you don't have to.
