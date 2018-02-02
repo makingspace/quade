@@ -45,7 +45,7 @@ if sys.argv[-1] == 'tag':
 readme = open('README.rst').read()
 # Replace relative internal reference to logo with an absolute external URL.
 readme = readme.replace(
-    'docs/_static/quade.*',
+    'docs/_static/quade.svg',
     'https://raw.githubusercontent.com/makingspace/quade/4ae3d090d36e2e8869c0edb50f6bede72446948d/docs/_static/quade_200x200.png',
 )
 

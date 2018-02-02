@@ -10,7 +10,7 @@ Quade
 
 Meet Quade, the friendly QA tool for Django!
 
-.. image:: docs/_static/quade.*
+.. image:: docs/_static/quade.svg
    :height: 200px
    :width: 200px
 
