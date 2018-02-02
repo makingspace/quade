@@ -46,7 +46,7 @@ readme = open('README.rst').read()
 # Replace relative internal reference to logo with an absolute external URL.
 readme = readme.replace(
     'docs/_static/quade.*',
-    'https://raw.githubusercontent.com/makingspace/quade/bf261f689b419f89b2125ccb9bd5bf01340f08e0/docs/_static/quade_200x200.png'
+    'https://raw.githubusercontent.com/makingspace/quade/4ae3d090d36e2e8869c0edb50f6bede72446948d/docs/_static/quade_200x200.png',
 )
 
 history = open('HISTORY.rst').read().replace('.. :changelog:\n\n', '')
