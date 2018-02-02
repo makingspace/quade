@@ -3,6 +3,18 @@
 History
 -------
 
+0.2.2 (2018-02-02)
+++++++++++++++++++
+
+* Fix dependency problems when installing without Celery (`#29`_).
+* Improve help text when not using Celery (`#22`_).
+* Use transparent logo (`#31`_).
+
+.. _#29: https://github.com/makingspace/quade/pull/29
+.. _#22: https://github.com/makingspace/quade/pull/22
+.. _#31: https://github.com/makingspace/quade/pull/31
+
+
 0.2.1 (2018-01-16)
 ++++++++++++++++++
 
